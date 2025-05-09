@@ -319,7 +319,8 @@ end
 include("protocols/HTTP.jl")
 include("protocols/IMAP.jl")
 
-# Temporary for backwards compatibility
+# Deprecated: Temporary for backwards compatibility
 const CurlError = CurlEasyError
+export CurlError
 
 end
