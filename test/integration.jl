@@ -16,17 +16,17 @@ const query = Dict{String,Any}(
 
     # Test for GET request
     @testset "GET request" begin
-        response = http_get("httpbin.org/get", query = query, read_timeout = 30)
+        response = http_get("http://localhost/get", query = query, read_timeout = 30)
         @test http_status(response) == 200
         body = parse_json(http_body(response))
         @test body["args"] == query
-        @test body["url"] == "http://httpbin.org/get?echo=你好嗎"
+        @test body["url"] == "http://localhost/get?echo=你好嗎"
     end
 
     # Test for HEAD request
     @testset "HEAD request" begin
         response = http_head(
-            "httpbin.org/get",
+            "http://localhost/get",
             headers = headers = [
                 "Content-Type" => "application/json"
             ],
@@ -40,7 +40,7 @@ const query = Dict{String,Any}(
     # Test for POST request
     @testset "POST request" begin
         response = http_post(
-            "httpbin.org/post",
+            "http://localhost/post",
             headers = headers = [
                 "Content-Type" => "application/json"
             ],
@@ -56,7 +56,7 @@ const query = Dict{String,Any}(
     # Test for PUT request
     @testset "PUT request" begin
         response = http_put(
-            "httpbin.org/put",
+            "http://localhost/put",
             headers = headers = [
                 "Content-Type" => "application/json"
             ],
@@ -72,7 +72,7 @@ const query = Dict{String,Any}(
     # Test for PATCH request
     @testset "PATCH request" begin
         response = http_patch(
-            "httpbin.org/patch",
+            "http://localhost/patch",
             headers = headers = [
                 "Content-Type" => "application/json"
             ],
@@ -89,7 +89,7 @@ const query = Dict{String,Any}(
     # Test for DELETE request
     @testset "DELETE request" begin
         response = http_delete(
-            "httpbin.org/delete",
+            "http://localhost/delete",
             headers = headers = [
                 "Content-Type" => "application/json"
             ],
@@ -158,7 +158,7 @@ end
 
 @testset "Stream" begin
     chunks = Vector{UInt8}[]
-    response = http_open("GET", "http://httpbin.org/stream/3", query = query) do stream
+    response = http_open("GET", "http://localhost/stream/3", query = query) do stream
         while !eof(stream)
             push!(chunks, read(stream, 280))
         end
@@ -167,32 +167,32 @@ end
     for chunk in chunks
         body = parse_json(chunk)
         @test body["args"] == query
-        @test body["url"] == "http://httpbin.org/stream/3?echo=你好嗎"
+        @test body["url"] == "http://localhost/stream/3?echo=你好嗎"
     end
 
     body = UInt8[]
-    response = http_open("GET", "httpbin.org/get", query = query) do stream
+    response = http_open("GET", "http://localhost/get", query = query) do stream
         append!(body, read(stream))
     end
     body_dict = parse_json(body)
     @test body_dict["args"] == query
-    @test body_dict["url"] == "http://httpbin.org/get?echo=你好嗎"
+    @test body_dict["url"] == "http://localhost/get?echo=你好嗎"
 end
 
 @testset "Client reusing" begin
     client = CurlClient()
 
-    response = http_request(client, "GET", "http://httpbin.org/get", query = query)
+    response = http_request(client, "GET", "http://localhost/get", query = query)
     @test http_status(response) == 200
     body = parse_json(http_body(response))
     @test body["args"] == query
-    @test body["url"] == "http://httpbin.org/get?echo=你好嗎"
+    @test body["url"] == "http://localhost/get?echo=你好嗎"
 
-    response = http_request(client, "POST", "http://httpbin.org/post", query = query)
+    response = http_request(client, "POST", "http://localhost/post", query = query)
     @test http_status(response) == 200
     body = parse_json(http_body(response))
     @test body["args"] == query
-    @test body["url"] == "http://httpbin.org/post?echo=你好嗎"
+    @test body["url"] == "http://localhost/post?echo=你好嗎"
 
     close(client)
 end
